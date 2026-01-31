@@ -65,12 +65,15 @@ try {
     req.session.isLoggedIn= true;
     req.session.userId=user._id;   
 
+    console.log('Setting session - ID:', req.sessionID, 'User:', user._id);
+
     // Save session before sending response
     req.session.save((err) => {
         if (err) {
             console.log('Session save error:', err);
             return res.status(500).json({message: 'Session save failed'});
         }
+        console.log('Session saved successfully');
         return res.json({
             message:"Logged in Successfully ",
             user:{
