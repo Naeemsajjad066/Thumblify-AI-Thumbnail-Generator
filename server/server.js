@@ -11,6 +11,12 @@ import UserRouter from './routes/UserRoutes.js';
 await connectDB();
 const app = express();
 
+const isProduction = process.env.VERCEL === '1' || process.env.NODE_ENV === 'production';
+// Needed so secure cookies work behind Vercel/Proxy
+if (isProduction) {
+    app.set('trust proxy', 1);
+}
+
 
 
 const port = process.env.PORT|| 3000;
@@ -28,8 +34,8 @@ app.use(session({
     cookie:{
         maxAge: 1000* 60 * 60 *24 *7, // 7-days expiry
         httpOnly: true,
-        secure: true, // Always true since Vercel uses HTTPS
-        sameSite: 'none', // Required for cross-domain cookies
+        secure: isProduction, // Only secure in production/https
+        sameSite: isProduction ? 'none' : 'lax', // Cross-site only in production
         path: '/'
     },
     store:MongoStore.create({
